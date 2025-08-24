@@ -1,6 +1,9 @@
 package service
 
-import "bank/repository"
+import (
+	"bank/repository"
+	"log"
+)
 
 /*
 ตัว CustomerService จะเป็นตัวกลางระหว่าง handler กับ repository แปลว่าตัวมันเองไม่มี data อยู่ในมือ ตัวมันเองทำหน้าที่แค่เป็นตัวจัดการคอยรับและส่งข้อมูลระหว่าง handler กับ repository เท่านั้น
@@ -21,9 +24,34 @@ func NewCustomerService(customerRepo repository.CustomerRepository) CustomerServ
 }
 
 func (s *customerService) GetCustomers() ([]CustomerResponse, error) {
-	return nil, nil
+	customers, err := s.customerRepo.GetAll()
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	customerResponse := []CustomerResponse{}
+	for _, customer := range customers {
+		customerResponse = append(customerResponse, CustomerResponse{
+			CustomerID: customer.CustomerID,
+			Name:       customer.Name,
+			Status:     customer.Status,
+		})
+	}
+	return customerResponse, nil
 }
 
 func (s *customerService) GetCustomer(id int) (*CustomerResponse, error) {
-	return nil, nil
+	customer, err := s.customerRepo.GetById(id)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	customerResponse := CustomerResponse{
+		CustomerID: customer.CustomerID,
+		Name:       customer.Name,
+		Status:     customer.Status,
+	}
+	return &customerResponse, nil
 }

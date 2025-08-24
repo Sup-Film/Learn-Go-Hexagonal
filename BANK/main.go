@@ -2,6 +2,7 @@ package main
 
 import (
 	"bank/repository"
+	"bank/service"
 	"context"
 	"fmt"
 	"log"
@@ -20,14 +21,17 @@ func main() {
 
 	customerRepository := repository.NewCustomerRepositoryDB(conn)
 
-	customers, err := customerRepository.GetAll()
+	// สร้าง customerService โดยสร้าง NewCustomerService instance ใหม่ขึ้นมา และทำการโยน customerRepository เข้าไปเพื่อให้ service สามารถเข้าถึงข้อมูลได้
+	customerService := service.NewCustomerService(customerRepository)
+
+	customers, err := customerService.GetCustomers()
 	if err != nil {
 		panic(err)
 	}
 
 	fmt.Println(customers)
 
-	customer, err := customerRepository.GetById(1)
+	customer, err := customerService.GetCustomer(1)
 	if err != nil {
 		panic(err)
 	}
